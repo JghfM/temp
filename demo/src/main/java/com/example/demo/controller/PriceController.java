@@ -21,28 +21,28 @@ public class PriceController {
     private final PriceServiceImpl priceService;
 
     @PostMapping
-    public ResponseEntity<Price> save(@RequestBody Price price) {
+    public ResponseEntity<Price> save(@RequestBody final Price price) {
         return ResponseEntity.of(Optional.of(priceService.save(price)));
     }
 
-    @GetMapping("/findById/{id}")
-    public ResponseEntity<Price> findById(@PathVariable("id") Long id) {
+    @GetMapping("/{id}")
+    public ResponseEntity<Price> findById(@PathVariable("id") final Long id) {
         Price price = priceService.findById(id);
         return price == null ? ResponseEntity.notFound().build():ResponseEntity.ok(price);
     }
 
     @Operation(summary = "Endpoint to resolve the given task")
     @GetMapping("/resolveTask")
-    public ResponseEntity<List<Price>> getPrices(@RequestParam("brandId") Long brandId,
-                                 @RequestParam("productId") Long productId,
+    public ResponseEntity<List<Price>> getPrices(@RequestParam("brandId") final Long brandId,
+                                 @RequestParam("productId") final Long productId,
                                  @Parameter(description = "date.description")
-                                 @RequestParam("date") String date) {
+                                 @RequestParam("date") final String date) {
         List<Price> prices = priceService.findPrices(brandId, productId, date);
         return (prices == null || prices.isEmpty())?ResponseEntity.notFound().build(): ResponseEntity.ok(prices);
     }
 
-    @DeleteMapping("/findById/{id}")
-    public ResponseEntity<?> deleteById(@PathVariable("id") Long id) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteById(@PathVariable("id") final Long id) {
         priceService.delete(id);
         return ResponseEntity.noContent().build();
     }
