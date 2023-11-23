@@ -16,11 +16,15 @@ import org.springframework.http.ResponseEntity;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -44,19 +48,18 @@ public class PriceControllerTest {
     @BeforeAll
     public void load() throws IOException {
         ClassLoader classLoader = getClass().getClassLoader();
-        File jsonFile = new File(Objects.requireNonNull(classLoader.getResource("expectedPrices.json")).getFile());
+        File jsonFile = new File(Objects.requireNonNull(classLoader.getResource("data.json")).getFile());
 
         expectedPrices = objectMapper.readValue(jsonFile, objectMapper.getTypeFactory().constructCollectionType(List.class, Price.class));
     }
 
     @Test
     void whenRetrievingTheCorrectPricesShouldReturn200() {
+        when(priceService.findPrices(eq(1L), eq(35455L), eq("2020-06-14 10:00:00"))).thenReturn(List.of(expectedPrices.get(0)));
 
-        when(priceService.findPrices(any(), any(), any())).thenReturn(expectedPrices);
-
-        ResponseEntity<List<Price>> response = priceController.getPrices( 1L, 1L,"2020-06-15 16:00:00");
+        ResponseEntity<List<Price>> response = priceController.getPrices( 1L, 35455L,"2020-06-14 10:00:00");
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(expectedPrices, response.getBody());
+        assertEquals(List.of(expectedPrices.get(0)), response.getBody());
     }
 
     @Test

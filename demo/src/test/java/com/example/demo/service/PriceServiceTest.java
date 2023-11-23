@@ -49,18 +49,64 @@ class PriceServiceTest {
     @BeforeAll
     public void load() throws IOException {
         ClassLoader classLoader = getClass().getClassLoader();
-        File jsonFile = new File(Objects.requireNonNull(classLoader.getResource("expectedPrices.json")).getFile());
+        File jsonFile = new File(Objects.requireNonNull(classLoader.getResource("data.json")).getFile());
 
         expectedPrices = objectMapper.readValue(jsonFile, objectMapper.getTypeFactory().constructCollectionType(List.class, Price.class));
     }
 
     @Test
-    void whenPriceExistsShouldBeAbleToFindByCriteria() {
-        when(priceRepository.findByCriteria(any(), any(), any())).thenReturn(expectedPrices);
+    void whenPriceExistsShouldBeAbleToFindByCriteria_Test1() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
+        LocalDateTime date = LocalDateTime.parse("2020-06-14 10:00:00", formatter);
+        when(priceRepository.findByCriteria(eq(1L), eq(35455L), eq(date))).thenReturn(List.of(expectedPrices.get(0)));
 
-        List<Price> result = priceService.findPrices(1L, 1L, "2020-06-15 16:00:00");
+        List<Price> result = priceService.findPrices(1L, 35455L, "2020-06-14 10:00:00");
 
-        assertEquals(expectedPrices, result);
+        assertEquals(List.of(expectedPrices.get(0)), result);
+    }
+
+    @Test
+    void whenPriceExistsShouldBeAbleToFindByCriteria_Test2() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
+        LocalDateTime date = LocalDateTime.parse("2020-06-14 16:00:00", formatter);
+        when(priceRepository.findByCriteria(eq(1L), eq(35455L), eq(date))).thenReturn(List.of(expectedPrices.get(0), expectedPrices.get(1)));
+
+        List<Price> result = priceService.findPrices(1L, 35455L, "2020-06-14 16:00:00");
+
+        assertEquals(List.of(expectedPrices.get(0), expectedPrices.get(1)), result);
+    }
+
+    @Test
+    void whenPriceExistsShouldBeAbleToFindByCriteria_Test3() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
+        LocalDateTime date = LocalDateTime.parse("2020-06-14 21:00:00", formatter);
+        when(priceRepository.findByCriteria(eq(1L), eq(35455L), eq(date))).thenReturn(List.of(expectedPrices.get(0)));
+
+        List<Price> result = priceService.findPrices(1L, 35455L, "2020-06-14 21:00:00");
+
+        assertEquals(List.of(expectedPrices.get(0)), result);
+    }
+
+    @Test
+    void whenPriceExistsShouldBeAbleToFindByCriteria_Test4() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
+        LocalDateTime date = LocalDateTime.parse("2020-06-15 10:00:00", formatter);
+        when(priceRepository.findByCriteria(eq(1L), eq(35455L), eq(date))).thenReturn(List.of(expectedPrices.get(0), expectedPrices.get(2)));
+
+        List<Price> result = priceService.findPrices(1L, 35455L, "2020-06-15 10:00:00");
+
+        assertEquals(List.of(expectedPrices.get(0), expectedPrices.get(2)), result);
+    }
+
+    @Test
+    void whenPriceExistsShouldBeAbleToFindByCriteria_Test5() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
+        LocalDateTime date = LocalDateTime.parse("2020-06-16 21:00:00", formatter);
+        when(priceRepository.findByCriteria(eq(1L), eq(35455L), eq(date))).thenReturn(List.of(expectedPrices.get(0), expectedPrices.get(3)));
+
+        List<Price> result = priceService.findPrices(1L, 35455L, "2020-06-16 21:00:00");
+
+        assertEquals(List.of(expectedPrices.get(0), expectedPrices.get(3)), result);
     }
 
     @Test
